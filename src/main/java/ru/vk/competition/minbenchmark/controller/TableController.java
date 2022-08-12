@@ -3,6 +3,7 @@ package ru.vk.competition.minbenchmark.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 import ru.vk.competition.minbenchmark.entity.Table;
 import ru.vk.competition.minbenchmark.service.TableService;
 
@@ -20,7 +21,7 @@ public class TableController {
     }
 
     @GetMapping("/get-table-by-name/{name}")
-    public Table getTable(@PathVariable String name) {
+    public Mono<Table> getTable(@PathVariable String name) {
         return tableService.getTable(name);
     }
 

@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -17,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@javax.persistence.Table(name = "table")
+@javax.persistence.Table(name = "tabled")
 public class Table {
     @Id
     @Column(name = "id", nullable = false)
@@ -31,5 +32,6 @@ public class Table {
     @NotNull
     String primaryKey;
     @NotNull
+    @ManyToMany
     List<ColumnInfo> columnInfos;
 }
