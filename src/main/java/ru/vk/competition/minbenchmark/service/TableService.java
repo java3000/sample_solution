@@ -2,6 +2,8 @@ package ru.vk.competition.minbenchmark.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -15,18 +17,34 @@ public class TableService {
 
     private final TableRepository tableRepository;
 
-    public int createTable(Table table) {
-        return 0;
+    public Mono<ResponseEntity<Void>> createTable(Table table) {
+        return Mono.fromCallable(() -> {
+            try {
+                tableRepository.save(table);
+                return new ResponseEntity<Void>(HttpStatus.CREATED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }).publishOn(Schedulers.boundedElastic());
     }
 
     public Mono<Table> getTable(String name) {
-        return Mono.fromCallable(() ->
-                tableRepository.findByTableName(name).orElseThrow(() -> new RuntimeException(
-                String.format("Cannot find table by name %s", name)
-        ))).publishOn(Schedulers.boundedElastic());
+        return Mono.fromCallable(() -> tableRepository.findByTableName(name).get())
+        .publishOn(Schedulers.boundedElastic());
     }
 
-    public int deleteTable(String name) {
-        return 0;
+    public Mono<ResponseEntity<Void>> deleteTable(String name) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(tableRepository.findByTableName(name).map(Table::getTableName).isEmpty()) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else {
+                    tableRepository.deleteByTableName(name);
+                    return new ResponseEntity<Void>(HttpStatus.CREATED);
+                }
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }).publishOn(Schedulers.boundedElastic());
     }
 }
