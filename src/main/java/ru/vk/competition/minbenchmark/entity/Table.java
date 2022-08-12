@@ -1,5 +1,6 @@
 package ru.vk.competition.minbenchmark.entity;
 
+import com.sun.istack.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,12 +20,16 @@ import java.util.List;
 public class Table {
     @Id
     @Column(name = "id", nullable = false)
+    @NotNull
     private Long id;
 
+    @NotNull
     String tableName;
+    @NotNull
     int columnsAmount;
+    @NotNull
     String primaryKey;
-
+    @NotNull
     List<ColumnInfo> columnInfos;
 
     public Long getId() {
