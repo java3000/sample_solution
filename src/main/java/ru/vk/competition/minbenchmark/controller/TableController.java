@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.vk.competition.minbenchmark.entity.Table;
+import ru.vk.competition.minbenchmark.service.TableService;
 
 @Slf4j
 @RestController
@@ -11,22 +12,20 @@ import ru.vk.competition.minbenchmark.entity.Table;
 @RequiredArgsConstructor
 public class TableController {
 
+    private final TableService tableService;
+
     @PostMapping("/create-table")
     public int createTable(@RequestBody Table table) {
-
-        return 0;
+        return tableService.createTable(table);
     }
 
     @GetMapping("/get-table-by-name/{name}")
     public Table getTable(@PathVariable String name) {
-        Table result = new Table();
-
-
-        return result;
+        return tableService.getTable(name);
     }
 
     @DeleteMapping("/drop-table-by-name/{name}")
-    public void deleteTable(@PathVariable String name) {
-
+    public int deleteTable(@PathVariable String name) {
+        return tableService.deleteTable(name);
     }
 }
