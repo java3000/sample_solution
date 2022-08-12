@@ -1,10 +1,16 @@
 package ru.vk.competition.minbenchmark.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @Builder
@@ -14,12 +20,12 @@ import javax.persistence.Table;
 @Table(name = "table_query")
 public class TableQuery {
     @Id
-    @NonNull
+    @NotNull
     int queryId;
-    @NonNull
-    //@Size(max=50)
+    @NotNull
+    @Size(max=50)
     String tableName;
-    @NonNull
-    //@Size(max=120)
+    @NotNull
+    @Size(max=120)
     String query;
 }

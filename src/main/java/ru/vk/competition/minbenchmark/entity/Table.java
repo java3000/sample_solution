@@ -1,6 +1,6 @@
 package ru.vk.competition.minbenchmark.entity;
 
-import com.sun.istack.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
@@ -31,12 +32,4 @@ public class Table {
     String primaryKey;
     @NotNull
     List<ColumnInfo> columnInfos;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 }
