@@ -12,13 +12,13 @@ import ru.vk.competition.minbenchmark.entity.Table;
 public class TableController {
 
     @PostMapping("/create-table")
-    public int createTable() {
+    public int createTable(@RequestBody Table table) {
 
         return 0;
     }
 
     @GetMapping("/get-table-by-name/{name}")
-    public Table getTable() {
+    public Table getTable(@PathVariable String name) {
         Table result = new Table();
 
 
@@ -26,7 +26,7 @@ public class TableController {
     }
 
     @DeleteMapping("/drop-table-by-name/{name}")
-    public void deleteTable() {
+    public void deleteTable(@PathVariable String name) {
 
     }
 }
