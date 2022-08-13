@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@javax.persistence.Table(name = "tabled")
+@javax.persistence.Table(name = "tables")
 public class Table {
     @Id
     @Column(name = "id", nullable = false)
@@ -33,5 +33,5 @@ public class Table {
     String primaryKey;
     @NotNull
     @ManyToMany
-    List<ColumnInfo> columnInfos;
+    List<Columns> columns;
 }

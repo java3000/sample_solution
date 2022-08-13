@@ -14,7 +14,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ColumnInfo {
+public class Columns {
     @Id
     @Column(name = "id", nullable = false)
     private Long id;
