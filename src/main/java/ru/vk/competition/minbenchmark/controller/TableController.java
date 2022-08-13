@@ -31,7 +31,7 @@ public class TableController {
         return tableService.getTable(name);
     }
 
-    @DeleteMapping("/drop-table-by-name/{name}")
+    @DeleteMapping("/drop-table/{name}")
     public Mono<ResponseEntity<Void>>  deleteTable(@PathVariable String name) {
         logger.info("drop-table-by-name request is " + name);
         return tableService.deleteTable(name);
