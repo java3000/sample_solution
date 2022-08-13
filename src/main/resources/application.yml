@@ -1,9 +1,9 @@
 server:
   port: 9081
 
-logging:
-  level:
-    root: WARN
+#logging:
+#  level:
+#    root: WARN
 
 spring:
   datasource:

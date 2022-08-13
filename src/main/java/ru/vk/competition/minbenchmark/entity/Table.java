@@ -21,10 +21,7 @@ import java.util.List;
 @javax.persistence.Table(name = "tables")
 public class Table {
     @Id
-    @Column(name = "id", nullable = false)
-    @NotNull
-    private Long id;
-
+    @Column(name = "tableName", nullable = false)
     @NotNull
     String tableName;
     @NotNull
@@ -33,5 +30,5 @@ public class Table {
     String primaryKey;
     @NotNull
     @ManyToMany
-    List<Columns> columns;
+    List<Columns> columnInfos;
 }
