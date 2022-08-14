@@ -33,7 +33,8 @@ public class TableQueryService {
 
     //private final String QUERY_PATTERN = "[a-zA-Z*]+";
     private final String QUERY_PATTERN = "[a-zA-Z*]+";
-    private final Pattern queryPattern = Pattern.compile(QUERY_PATTERN);
+    //private final String QUERY_PATTERN = "(select|update|insert|delete)[\s\S]+";
+    private final Pattern queryPattern = Pattern.compile(QUERY_PATTERN, Pattern.MULTILINE | Pattern.DOTALL);
 
     public Mono<ResponseEntity<Void>> addQuery(TableQuery query) {
         logger.info(String.format("addQuery NEW. id: %s%n tableName: %s%n query: %s%n",
