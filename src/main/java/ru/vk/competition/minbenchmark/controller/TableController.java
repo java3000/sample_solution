@@ -16,24 +16,24 @@ import java.util.logging.Logger;
 @RequiredArgsConstructor
 public class TableController {
 
-    Logger logger = Logger.getLogger("table");
+    //Logger logger = Logger.getLogger("table");
     private final TableService tableService;
 
     @PostMapping("/create-table")
     public Mono<ResponseEntity<Void>> createTable(@RequestBody Table table) {
-        logger.info(" create-table request is " + table.getTableName());
+        //logger.info(" create-table request is " + table.getTableName());
         return tableService.createTable(table);
     }
 
     @GetMapping("/get-table-by-name/{name}")
     public Mono<ResponseEntity<Table>> getTable(@PathVariable String name) {
-        logger.info("get-table-by-name request is " + name);
+        //logger.info("get-table-by-name request is " + name);
         return tableService.getTable(name);
     }
 
     @DeleteMapping("/drop-table/{name}")
     public Mono<ResponseEntity<Void>>  deleteTable(@PathVariable String name) {
-        logger.info("drop-table-by-name request is " + name);
+        //logger.info("drop-table-by-name request is " + name);
         return tableService.deleteTable(name);
     }
 }

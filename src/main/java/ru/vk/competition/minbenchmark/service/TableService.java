@@ -74,7 +74,8 @@ public class TableService {
             Table table = tableRepository.findByTableName(name).get();
             table.setPrimaryKey(table.getPrimaryKey().toLowerCase());
             table.getColumnInfos().forEach(x -> x.setTitle(x.getTitle().toUpperCase()));
-            table.getColumnInfos().forEach(x -> x.setType((Objects.equals(x.getType(), "int4")) ? "INTEGER" : "CHARACTER VARYING"));
+            //table.getColumnInfos().forEach(x -> x.setType((Objects.equals(x.getType(), "int4")) ? "INTEGER" : "CHARACTER VARYING"));
+            table.getColumnInfos().forEach(x -> x.setType((Objects.equals(x.getType(), "int4")) ? "INTEGER" : "CHARACTER"));
             //table.getColumnInfos().forEach(x -> x.setType(x.getType().toUpperCase()));
 
             /*logger.info(String.format("getTable success with name %s and key: %s %n " +

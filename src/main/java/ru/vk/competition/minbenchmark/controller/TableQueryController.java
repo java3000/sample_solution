@@ -21,32 +21,37 @@ public class TableQueryController {
     private final TableQueryService tableQueryService;
 
     @PostMapping("/add-new-query-to-table")
-    public Mono<ResponseEntity<Void>> addQuery (@RequestBody TableQuery query) {
+    public Mono<ResponseEntity<Void>> addQuery(@RequestBody TableQuery query) {
         return tableQueryService.addQuery(query);
     }
 
     @PutMapping("/modify-query-in-table")
-    public Mono<ResponseEntity<Void>> updateQuery (@RequestBody TableQuery query) {
+    public Mono<ResponseEntity<Void>> updateQuery(@RequestBody TableQuery query) {
         return tableQueryService.updateQuery(query);
     }
 
     @DeleteMapping("/delete-table-query-by-id/{id}")
-    public Mono<ResponseEntity<Void>> deleteQuery (@PathVariable int id) {
+    public Mono<ResponseEntity<Void>> deleteQuery(@PathVariable int id) {
         return tableQueryService.deleteQuery(id);
     }
 
     @GetMapping("/execute-table-query-by-id/{id}")
-    public Mono<ResponseEntity<Void>> executeQuery (@PathVariable int id) {
+    public Mono<ResponseEntity<Void>> executeQuery(@PathVariable int id) {
         return tableQueryService.executeQuery(id);
     }
 
     @GetMapping("/get-table-query-by-id/{id}")
-    public Mono<ResponseEntity<TableQuery>>  getQuery(@PathVariable int id) {
+    public Mono<ResponseEntity<TableQuery>> getQuery(@PathVariable int id) {
         return tableQueryService.getQuery(id);
     }
 
+    @GetMapping("/get-all-queries-by-table-name/{name}")
+    public Mono<ResponseEntity<List<TableQuery>>> getAllQueriesByTable(String name) {
+        return tableQueryService.getAllQueriesByTable(name);
+    }
+
     @GetMapping("/get-all-table-queries")
-    public Flux<TableQuery> listAllQueries () {
+    public Flux<TableQuery> listAllQueries() {
         return tableQueryService.listQueries();
     }
 }
