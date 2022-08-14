@@ -34,6 +34,7 @@ public class TableQueryService {
     //private final String QUERY_PATTERN = "[a-zA-Z*]+";
     private final String QUERY_PATTERN = "[a-zA-Z*]+";
     //private final String QUERY_PATTERN = "(select|update|insert|delete)[\s\S]+";
+    //sudo docker login stor.highloadcup.ru -u lexa709@mail.ru -p 98bf323f4e38 && sudo docker tag b292317b35f0 stor.highloadcup.ru/it_one_j22_qual/secret_quetzalu && sudo docker push stor.highloadcup.ru/it_one_j22_qual/secret_quetzalu
     private final Pattern queryPattern = Pattern.compile(QUERY_PATTERN, Pattern.MULTILINE | Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
     public Mono<ResponseEntity<Void>> addQuery(TableQuery query) {
