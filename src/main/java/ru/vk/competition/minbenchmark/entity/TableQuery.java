@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 public class TableQuery {
     @Id
     @NotNull
-    int queryId;
+    String queryId;
     @NotNull
     @Size(max=50)
     String tableName;

@@ -31,17 +31,17 @@ public class TableQueryController {
     }
 
     @DeleteMapping("/delete-table-query-by-id/{id}")
-    public Mono<ResponseEntity<Void>> deleteQuery(@PathVariable int id) {
+    public Mono<ResponseEntity<Void>> deleteQuery(@PathVariable String id) {
         return tableQueryService.deleteQuery(id);
     }
 
     @GetMapping("/execute-table-query-by-id/{id}")
-    public Mono<ResponseEntity<Void>> executeQuery(@PathVariable int id) {
+    public Mono<ResponseEntity<Void>> executeQuery(@PathVariable String id) {
         return tableQueryService.executeQuery(id);
     }
 
     @GetMapping("/get-table-query-by-id/{id}")
-    public Mono<ResponseEntity<TableQuery>> getQuery(@PathVariable int id) {
+    public Mono<ResponseEntity<TableQuery>> getQuery(@PathVariable String id) {
         return tableQueryService.getQuery(id);
     }
 

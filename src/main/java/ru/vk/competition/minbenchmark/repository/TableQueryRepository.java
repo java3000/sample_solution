@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TableQueryRepository extends CrudRepository<TableQuery, Integer> {
-    Optional<TableQuery> findByQueryId(Integer id);
+public interface TableQueryRepository extends CrudRepository<TableQuery, String> {
+    Optional<TableQuery> findByQueryId(String id);
 
     Optional<List<TableQuery>> findAllByTableName(String name);
 
     @Transactional
-    void deleteByQueryId(Integer id);
+    void deleteByQueryId(String id);
 }
