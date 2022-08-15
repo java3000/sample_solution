@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import ru.vk.competition.minbenchmark.entity.SingleQuery;
 import ru.vk.competition.minbenchmark.entity.Table;
 import ru.vk.competition.minbenchmark.helpers.DatabaseHelper;
 import ru.vk.competition.minbenchmark.repository.TableQueryRepository;
@@ -27,7 +28,7 @@ public class TableService {
     public Mono<ResponseEntity<Void>> createTable(Table table) {
         return Mono.fromCallable(() -> {
             try {
-                if (!tableRepository.findByTableName(table.getTableName()).isEmpty()) { //уже есть такая
+                if (!tableRepository.findByTableName(table.getTableName()).map(Table::getTableName).isEmpty()) { //уже есть такая
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (table.getPrimaryKey() == null) { //нет ключа
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
