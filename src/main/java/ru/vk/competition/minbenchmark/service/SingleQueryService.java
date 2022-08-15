@@ -2,6 +2,7 @@ package ru.vk.competition.minbenchmark.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -9,36 +10,57 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.vk.competition.minbenchmark.entity.SingleQuery;
+import ru.vk.competition.minbenchmark.entity.TableQuery;
 import ru.vk.competition.minbenchmark.repository.SingleQueryRepository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class SingleQueryService {
 
     private final SingleQueryRepository queryRepository;
 
-    public Flux<SingleQuery> getAllQueries() {
-        return Mono.fromCallable(queryRepository::findAll)
-                .publishOn(Schedulers.boundedElastic())
-                .flatMapIterable(x -> x);
+    public Mono<ResponseEntity<List<SingleQuery>>> getAllQueries() {
+        return Mono.fromCallable(() -> {
+            List<SingleQuery> querysList = new ArrayList<>();
+            queryRepository.findAll().forEach(querysList::add);
+
+            return new ResponseEntity<>(querysList, HttpStatus.OK);
+        }).publishOn(Schedulers.boundedElastic());
     }
 
-    public Mono<SingleQuery> getQueryById(Integer id) {
-        return Mono.fromCallable(() -> queryRepository.findByQueryId(id).orElseThrow(() -> new RuntimeException(
-                String.format("Cannot find tableQuery by Id %s", id.toString())
-        ))).publishOn(Schedulers.boundedElastic());
+    public Mono<ResponseEntity<SingleQuery>> getQueryById(String id) {
+        return Mono.fromCallable(() -> {
+                    try {
+                        if (id == null) {
+                            return new ResponseEntity<SingleQuery>(HttpStatus.NOT_ACCEPTABLE);
+                        } else if (Integer.parseInt(id) <= 0) {
+                            return new ResponseEntity<SingleQuery>(HttpStatus.NOT_ACCEPTABLE);
+                        } else if (!queryRepository.findByQueryId(id).isPresent()) {
+                            return new ResponseEntity<SingleQuery>(HttpStatus.INTERNAL_SERVER_ERROR);
+                        } else {
+                            SingleQuery query = queryRepository.findByQueryId(id).get();
+                            return new ResponseEntity<SingleQuery>(query, HttpStatus.OK);
+                        }
+                    } catch (RuntimeException e) {
+                        return new ResponseEntity<SingleQuery>(HttpStatus.NOT_ACCEPTABLE);
+                    }
+                }
+        ).publishOn(Schedulers.boundedElastic());
     }
 
-    public Mono<ResponseEntity<Void>> deleteQueryById(Integer id) {
+    public Mono<ResponseEntity<Void>> deleteQueryById(String id) {
         return Mono.fromCallable(() -> {
             try {
-                if(queryRepository.findByQueryId(id).map(SingleQuery::getQueryId).isEmpty()) {
+                if(id == null || Integer.parseInt(id) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if(queryRepository.findByQueryId(id).map(SingleQuery::getQueryId).isEmpty()) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else {
                     queryRepository.deleteByQueryId(id);
@@ -52,35 +74,56 @@ public class SingleQueryService {
 
     public Mono<ResponseEntity<Void>> addQueryWithQueryId(SingleQuery singleQuery) {
         return Mono.fromCallable(() -> {
-            queryRepository.save(singleQuery);
+
+            try {
+                if(singleQuery.getQueryId() == null || Integer.parseInt(singleQuery.getQueryId()) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                } else if (singleQuery.getQuery() == null || singleQuery.getQuery().isEmpty() || singleQuery.getQuery().length() > 120) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                queryRepository.save(singleQuery);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
             return new ResponseEntity<Void>(HttpStatus.CREATED);
         }).publishOn(Schedulers.boundedElastic());
     }
 
     public Mono<ResponseEntity<Void>> updateQueryWithQueryId(SingleQuery singleQuery) {
         return Mono.fromCallable(() -> {
-            queryRepository.findByQueryId(singleQuery.getQueryId())
-                    .orElseThrow(() -> new RuntimeException(
-                            String.format("Cannot find tableQuery by ID %s", singleQuery.getQueryId())
-                    ));
-            queryRepository.save(singleQuery);
-            return ResponseEntity.<Void>ok(null);
+            try {
+                if(singleQuery.getQueryId() == null || Integer.parseInt(singleQuery.getQueryId()) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if (singleQuery.getQuery() == null || singleQuery.getQuery().isEmpty() || singleQuery.getQuery().length() > 120) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if(queryRepository.findByQueryId(singleQuery.getQueryId()).isEmpty()) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else {
+                    queryRepository.save(singleQuery);
+                    return ResponseEntity.<Void>ok(null);
+                }
+            } catch (NumberFormatException e) {
+                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
         }).publishOn(Schedulers.boundedElastic());
     }
 
-    public Mono<ResponseEntity<Void>> executeSingleQuery(Integer id) {
+    public Mono<ResponseEntity<Void>> executeSingleQuery(String id) {
         return Mono.fromCallable(() -> {
             Connection connection = null;
             Statement statement = null;
             Optional<String> createSql = null;
             try {
-                Class.forName("org.postgresql.Driver");
-                connection = DriverManager.getConnection(
-                        "jdbc:postgresql://localhost:5432/postgres",
-                        "postgres",
-                        "123"
-                );
-                log.debug("Database connected hahaha....");
+                if(id == null || Integer.parseInt(id) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if(queryRepository.findByQueryId(id).map(SingleQuery::getQueryId).isEmpty()) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }
+
+                Class.forName("org.h2.Driver");
+                connection = DriverManager.getConnection("jdbc:h2:mem:mydb", "sa", "password");
+
                 statement = connection.createStatement();
                 createSql = queryRepository.findByQueryId(id).map(SingleQuery::getQuery);
                 statement.execute(createSql.get());

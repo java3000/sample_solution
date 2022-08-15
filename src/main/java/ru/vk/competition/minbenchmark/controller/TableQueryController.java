@@ -6,13 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.vk.competition.minbenchmark.entity.SingleQuery;
 import ru.vk.competition.minbenchmark.entity.TableQuery;
 import ru.vk.competition.minbenchmark.service.TableQueryService;
 
 import java.util.List;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/table-query")
 @RequiredArgsConstructor
@@ -51,7 +49,7 @@ public class TableQueryController {
     }
 
     @GetMapping("/get-all-table-queries")
-    public Flux<TableQuery> listAllQueries() {
+    public Mono<ResponseEntity<List<TableQuery>>> listAllQueries() {
         return tableQueryService.listQueries();
     }
 }

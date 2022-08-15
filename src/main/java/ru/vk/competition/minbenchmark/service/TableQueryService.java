@@ -1,6 +1,7 @@
 package ru.vk.competition.minbenchmark.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import ru.vk.competition.minbenchmark.repository.TableRepository;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -27,8 +29,10 @@ public class TableQueryService {
     Logger logger = Logger.getLogger("table-query");
     private final TableRepository tableRepository;
     private final TableQueryRepository tableQueryRepository;
-    private final String QUERY_PATTERN = "([a-zA-Z*]+)";
-    private final Pattern queryPattern = Pattern.compile(QUERY_PATTERN, Pattern.MULTILINE | Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
+    //private final String QUERY_PATTERN = "([a-zA-Z*\\s]+)";
+    private final String QUERY_PATTERN = "([a-zA-Zа-яА-Я*]+)"; // "Customerлала = валидное имя :)"
+    //private final String QUERY_PATTERN = "([a-zA-Z*]+)";
+    private final Pattern queryPattern = Pattern.compile(QUERY_PATTERN, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
     public Mono<ResponseEntity<Void>> addQuery(TableQuery query) {
         logger.info(String.format("addQuery NEW. id: %s%n tableName: %s%n query: %s%n",
@@ -36,11 +40,9 @@ public class TableQueryService {
                 query.getTableName(),
                 query.getQuery()));
         return Mono.fromCallable(() -> {
-            if(query.getQueryId() == null) {
+            if (query.getQueryId() == null || query.getTableName() == null || query.getQuery() == null) {
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             } else if (Integer.parseInt(query.getQueryId()) <= 0) {
-                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-            } else if (query.getTableName() == null || query.getQuery() == null){
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             } else if (query.getQuery().length() > 120 || query.getTableName().length() > 50) {
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -75,19 +77,22 @@ public class TableQueryService {
 
         return Mono.fromCallable(() -> {
             try {
-                if(query.getQueryId() == null) {
+                if (query.getQueryId() == null || query.getTableName() == null || query.getQuery() == null) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (Integer.parseInt(query.getQueryId()) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                } else if (query.getTableName() == null || query.getQuery() == null){
+                } else if (query.getQuery().length() > 120 || query.getTableName().length() > 50) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                }else if (!tableRepository.findByTableName(query.getTableName()).map(Table::getTableName).isEmpty()) {
+                } else if (!tableRepository.findByTableName(query.getTableName()).map(Table::getTableName).isEmpty()) {
                     logger.info(String.format("updateQuery there is no such table name: %s ", query.getTableName()));
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (!tableQueryRepository.findByQueryId(query.getQueryId()).isPresent()) {
                     logger.info(String.format("updateQuery there is no such query: %s ", query.getQueryId()));
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                } else {
+                } else if (!queryPattern.matcher(query.getQuery()).matches()) {
+                    logger.info(String.format("addQuery invalid query: %s ", query.getQuery()));
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }  else {
                     tableQueryRepository.save(query);
                     logger.info(String.format("updateQuery success query update: %s ", query.getQueryId()));
                     return ResponseEntity.<Void>ok(null);
@@ -102,9 +107,7 @@ public class TableQueryService {
     public Mono<ResponseEntity<Void>> deleteQuery(String id) {
         return Mono.fromCallable(() -> {
             try {
-                if(id == null) {
-                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                } else if (Integer.parseInt(id) <= 0) {
+                if (id == null || Integer.parseInt(id) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (tableQueryRepository.findByQueryId(id).isEmpty()) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
@@ -123,21 +126,15 @@ public class TableQueryService {
             Connection connection;
             Statement statement;
             Optional<String> createSql;
-            try {
 
-                if(id == null) {
-                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                } else if (Integer.parseInt(id) <= 0) {
+            try {
+                if (id == null || Integer.parseInt(id) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 }
 
-                    Class.forName("org.postgresql.Driver");
-                connection = DriverManager.getConnection(
-                        "jdbc:postgresql://localhost:5432/postgres",
-                        "postgres",
-                        "123"
-                );
-                //log.debug("Database connected hahaha....");
+                Class.forName("org.h2.Driver");
+                connection = DriverManager.getConnection("jdbc:h2:mem:mydb", "sa", "password");
+
                 statement = connection.createStatement();
                 createSql = tableQueryRepository.findByQueryId(id).map(TableQuery::getQuery);
                 statement.execute(createSql.get());
@@ -154,17 +151,17 @@ public class TableQueryService {
     public Mono<ResponseEntity<TableQuery>> getQuery(String id) {
         return Mono.fromCallable(() -> {
                     try {
-                        if(id == null) {
+                        if (id == null) {
                             return new ResponseEntity<TableQuery>(HttpStatus.NOT_ACCEPTABLE);
                         } else if (Integer.parseInt(id) <= 0) {
                             return new ResponseEntity<TableQuery>(HttpStatus.NOT_ACCEPTABLE);
                         } else if (!tableQueryRepository.findByQueryId(id).isPresent()) {
                             logger.info(String.format("getQuery there is no such query: %s ", id));
-                            return new ResponseEntity<TableQuery>(HttpStatus.NOT_ACCEPTABLE);
+                            return new ResponseEntity<TableQuery>(HttpStatus.INTERNAL_SERVER_ERROR);
                         } else {
                             TableQuery query = tableQueryRepository.findByQueryId(id).get();
                             logger.info(String.format("getQuery success query update: %s ", query.getQueryId()));
-                            return new ResponseEntity<TableQuery>(query, HttpStatus.CREATED);
+                            return new ResponseEntity<TableQuery>(query, HttpStatus.OK);
                         }
                     } catch (RuntimeException e) {
                         logger.info(String.format("getQuery creating query exception: %s ", e.getMessage()));
@@ -174,19 +171,23 @@ public class TableQueryService {
         ).publishOn(Schedulers.boundedElastic());
     }
 
-    public Flux<TableQuery> listQueries() {
-        return Mono.fromCallable(tableQueryRepository::findAll)
-                .publishOn(Schedulers.boundedElastic())
-                .flatMapIterable(x -> x);
+    public Mono<ResponseEntity<List<TableQuery>>> listQueries() {
+        return Mono.fromCallable(() -> {
+            List<TableQuery> tableQueriesList = new ArrayList<>();
+            tableQueryRepository.findAll().forEach(tableQueriesList::add);
+
+            return new ResponseEntity<>(tableQueriesList, HttpStatus.OK);
+        }).publishOn(Schedulers.boundedElastic());
     }
 
-    public Mono<ResponseEntity<List<TableQuery>>>  getAllQueriesByTable(String name) {
+    public Mono<ResponseEntity<List<TableQuery>>> getAllQueriesByTable(String name) {
         return Mono.fromCallable(() -> {
-            if(name == null) {
-                return new ResponseEntity<List<TableQuery>>(HttpStatus.NOT_ACCEPTABLE);
+            if (name == null) {
+                //return new ResponseEntity<List<TableQuery>>(HttpStatus.NOT_ACCEPTABLE);
+                return new ResponseEntity<List<TableQuery>>(HttpStatus.OK);
             }
-                List<TableQuery> queries = tableQueryRepository.findAllByTableName(name).get();
-            return new ResponseEntity<>(queries, HttpStatus.OK);
+            List<TableQuery> tableQueries = tableQueryRepository.findAllByTableName(name).get();
+            return new ResponseEntity<>(tableQueries, HttpStatus.OK);
         }).publishOn(Schedulers.boundedElastic());
     }
 }

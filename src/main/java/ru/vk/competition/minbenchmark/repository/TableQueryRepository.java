@@ -14,6 +14,10 @@ public interface TableQueryRepository extends CrudRepository<TableQuery, String>
 
     Optional<List<TableQuery>> findAllByTableName(String name);
 
+    //@Transactional
+    void deleteAllByTableName(String name);
+
     @Transactional
     void deleteByQueryId(String id);
+
 }

@@ -8,10 +8,10 @@ import ru.vk.competition.minbenchmark.entity.SingleQuery;
 import java.util.Optional;
 
 @Repository
-public interface SingleQueryRepository extends CrudRepository<SingleQuery, Integer> {
+public interface SingleQueryRepository extends CrudRepository<SingleQuery, String> {
 
-    Optional<SingleQuery> findByQueryId(Integer id);
+    Optional<SingleQuery> findByQueryId(String id);
 
     @Transactional
-    void deleteByQueryId(Integer id);
+    void deleteByQueryId(String id);
 }

@@ -9,6 +9,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @Builder
@@ -20,8 +23,11 @@ public class SingleQuery {
 
     @Id
     @Column(name = "queryId")
-    private Integer queryId;
+    @NotNull
+    private String queryId;
 
     @Column(name = "query")
+    @NotNull
+    @Size(max = 120)
     private String query;
 }
