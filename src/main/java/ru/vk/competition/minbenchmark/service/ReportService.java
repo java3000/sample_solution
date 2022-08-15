@@ -63,6 +63,17 @@ public class ReportService {
                 //logger.info(String.format("createReport table amount not equal tables count: amount: %s%n count %s%n",
                 //        report.getTableAmount(), tableRepository.count()));
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            } else if (report.getTables() != null) {
+                for (var table : report.getTables()) {
+                    if (tableRepository.findByTableName(table.getTableName()).isEmpty()) {
+                        return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                    }
+
+                    var tab = tableRepository.findByTableName(table.getTableName()).get();
+                    var cols = tab.getColumnInfos();
+
+                    if ()
+                }
             }
             //TODO
             /*
