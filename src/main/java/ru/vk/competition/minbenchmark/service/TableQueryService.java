@@ -1,11 +1,9 @@
 package ru.vk.competition.minbenchmark.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.vk.competition.minbenchmark.entity.Table;
@@ -19,14 +17,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class TableQueryService {
 
-    Logger logger = Logger.getLogger("table-query");
     private final TableRepository tableRepository;
     private final TableQueryRepository tableQueryRepository;
     //private final String QUERY_PATTERN = "([a-zA-Zа-яА-Я*\\s]+)"; // "Customerлала = валидное имя :)"
@@ -43,23 +39,17 @@ public class TableQueryService {
             } else if (query.getQuery().length() > 120 || query.getTableName().length() > 50) {
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             } else if (!tableRepository.findByTableName(query.getTableName()).map(Table::getTableName).isEmpty()) {
-                logger.info(String.format("addQuery there is no such table name: %s ", query.getTableName()));
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             } else if (tableQueryRepository.findByQueryId(query.getQueryId()).isPresent()) {
-                logger.info(String.format("addQuery query already exists: %s ", query.getQueryId()));
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             } else if (!queryPattern.matcher(query.getQuery()).matches()) {
-                logger.info(String.format("addQuery invalid query: %s ", query.getQuery()));
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             } else {
                 try {
-                    logger.info("addQuery start creating query");
                     tableQueryRepository.save(query);
                 } catch (Exception e) {
-                    logger.info(String.format("addQuery creating query exception: %s ", e.getMessage()));
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 }
-                logger.info("addQuery successfully created");
                 return new ResponseEntity<Void>(HttpStatus.CREATED);
             }
         }).publishOn(Schedulers.boundedElastic());
@@ -75,21 +65,16 @@ public class TableQueryService {
                 } else if (query.getQuery().length() > 120 || query.getTableName().length() > 50) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (!tableRepository.findByTableName(query.getTableName()).map(Table::getTableName).isEmpty()) {
-                    logger.info(String.format("updateQuery there is no such table name: %s ", query.getTableName()));
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (!tableQueryRepository.findByQueryId(query.getQueryId()).isPresent()) {
-                    logger.info(String.format("updateQuery there is no such query: %s ", query.getQueryId()));
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (!queryPattern.matcher(query.getQuery()).matches()) {
-                    logger.info(String.format("addQuery invalid query: %s ", query.getQuery()));
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 }  else {
                     tableQueryRepository.save(query);
-                    logger.info(String.format("updateQuery success query update: %s ", query.getQueryId()));
                     return ResponseEntity.<Void>ok(null);
                 }
             } catch (RuntimeException e) {
-                logger.info(String.format("updateQuery creating query exception: %s ", e.getMessage()));
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             }
         }).publishOn(Schedulers.boundedElastic());
