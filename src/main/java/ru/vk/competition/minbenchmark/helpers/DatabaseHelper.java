@@ -16,9 +16,8 @@ public class DatabaseHelper {
 
         Connection connection = null;
         Statement statement = null;
-        String myTableName = String.format("CREATE TABLE IF NOT EXISTS %s (", table.getTableName());
 
-        StringBuilder columnBuilder = new StringBuilder(myTableName);
+        StringBuilder columnBuilder = new StringBuilder(String.format("CREATE TABLE IF NOT EXISTS %s (", table.getTableName()));
         for (var column : table.getColumnInfos()) {
             if (column.getTitle().equals(table.getPrimaryKey())) {
                 columnBuilder.append(String.format("%s %S NOT NULL AUTO_INCREMENT",column.getTitle(), column.getType()));
@@ -39,11 +38,11 @@ public class DatabaseHelper {
             connection.close();
         }
         catch (SQLException e ) {
-            System.out.println("An error has occured on Table Creation");
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
         catch (ClassNotFoundException e) {
-            System.out.println("An Mysql drivers were not found");
+            System.out.println(e.getMessage());
         }
     }
 }
