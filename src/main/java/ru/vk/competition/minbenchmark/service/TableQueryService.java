@@ -70,7 +70,7 @@ public class TableQueryService {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (!queryPattern.matcher(query.getQuery()).matches()) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                }  else {
+                } else {
                     tableQueryRepository.save(query);
                     return ResponseEntity.<Void>ok(null);
                 }

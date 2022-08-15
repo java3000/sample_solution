@@ -20,7 +20,7 @@ public class DatabaseHelper {
         StringBuilder columnBuilder = new StringBuilder(String.format("CREATE TABLE IF NOT EXISTS %s (", table.getTableName()));
         for (var column : table.getColumnInfos()) {
             if (column.getTitle().equals(table.getPrimaryKey())) {
-                columnBuilder.append(String.format("%s %S NOT NULL AUTO_INCREMENT",column.getTitle(), column.getType()));
+                columnBuilder.append(String.format("%s %S NOT NULL AUTO_INCREMENT", column.getTitle(), column.getType()));
             } else {
                 columnBuilder.append(String.format(", %s %s", column.getTitle(), column.getType()));
             }
@@ -36,12 +36,10 @@ public class DatabaseHelper {
             statement.executeUpdate(columnBuilder.toString());
             statement.close();
             connection.close();
-        }
-        catch (SQLException e ) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             System.out.println(e.getMessage());
         }
     }

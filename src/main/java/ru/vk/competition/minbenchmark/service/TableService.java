@@ -26,29 +26,29 @@ public class TableService {
 
     public Mono<ResponseEntity<Void>> createTable(Table table) {
         return Mono.fromCallable(() -> {
-                    try {
-                        if (!tableRepository.findByTableName(table.getTableName()).isEmpty()) { //уже есть такая
+            try {
+                if (!tableRepository.findByTableName(table.getTableName()).isEmpty()) { //уже есть такая
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if (table.getPrimaryKey() == null) { //нет ключа
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if (!tablePattern.matcher(table.getTableName()).matches()) { //имя таблицы неправильное
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if (table.getColumnInfos().stream().filter(x -> Objects.equals(x.getTitle(), table.getPrimaryKey())).count() == 0) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE); //ключ неверен
+                } else {
+                    for (var column : table.getColumnInfos()) {
+                        if (!tablePattern.matcher(column.getTitle()).matches()) {
                             return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                        } else if (table.getPrimaryKey() == null) { //нет ключа
-                            return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                        } else if (!tablePattern.matcher(table.getTableName()).matches()) { //имя таблицы неправильное
-                            return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                        } else if (table.getColumnInfos().stream().filter(x -> Objects.equals(x.getTitle(), table.getPrimaryKey())).count() == 0) {
-                            return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE); //ключ неверен
-                        } else {
-                            for (var column : table.getColumnInfos()) {
-                                if (!tablePattern.matcher(column.getTitle()).matches()) {
-                                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                                }
-                            }
-                            tableRepository.save(table);
-                            DatabaseHelper.createTable(table);
-                            return new ResponseEntity<Void>(HttpStatus.CREATED);
-                        }//имя колонок или их тип неправельные
-                    } catch (Exception e) {
-                        return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                        }
                     }
-                }).publishOn(Schedulers.boundedElastic());
+                    tableRepository.save(table);
+                    DatabaseHelper.createTable(table);
+                    return new ResponseEntity<Void>(HttpStatus.CREATED);
+                }//имя колонок или их тип неправельные
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }).publishOn(Schedulers.boundedElastic());
     }
 
     public Mono<ResponseEntity<Table>> getTable(String name) {

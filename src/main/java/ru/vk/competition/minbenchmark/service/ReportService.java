@@ -12,7 +12,6 @@ import ru.vk.competition.minbenchmark.repository.ReportRepository;
 import ru.vk.competition.minbenchmark.repository.TableRepository;
 
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service

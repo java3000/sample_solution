@@ -1,16 +1,12 @@
 package ru.vk.competition.minbenchmark.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.vk.competition.minbenchmark.entity.SingleQuery;
-import ru.vk.competition.minbenchmark.entity.TableQuery;
 import ru.vk.competition.minbenchmark.repository.SingleQueryRepository;
 
 import java.sql.Connection;
@@ -58,9 +54,9 @@ public class SingleQueryService {
     public Mono<ResponseEntity<Void>> deleteQueryById(String id) {
         return Mono.fromCallable(() -> {
             try {
-                if(id == null || Integer.parseInt(id) <= 0) {
+                if (id == null || Integer.parseInt(id) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                } else if(queryRepository.findByQueryId(id).map(SingleQuery::getQueryId).isEmpty()) {
+                } else if (queryRepository.findByQueryId(id).map(SingleQuery::getQueryId).isEmpty()) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else {
                     queryRepository.deleteByQueryId(id);
@@ -76,7 +72,7 @@ public class SingleQueryService {
         return Mono.fromCallable(() -> {
 
             try {
-                if(singleQuery.getQueryId() == null || Integer.parseInt(singleQuery.getQueryId()) <= 0) {
+                if (singleQuery.getQueryId() == null || Integer.parseInt(singleQuery.getQueryId()) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 } else if (singleQuery.getQuery() == null || singleQuery.getQuery().isEmpty() || singleQuery.getQuery().length() > 120) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
@@ -93,11 +89,11 @@ public class SingleQueryService {
     public Mono<ResponseEntity<Void>> updateQueryWithQueryId(SingleQuery singleQuery) {
         return Mono.fromCallable(() -> {
             try {
-                if(singleQuery.getQueryId() == null || Integer.parseInt(singleQuery.getQueryId()) <= 0) {
+                if (singleQuery.getQueryId() == null || Integer.parseInt(singleQuery.getQueryId()) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else if (singleQuery.getQuery() == null || singleQuery.getQuery().isEmpty() || singleQuery.getQuery().length() > 120) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                } else if(queryRepository.findByQueryId(singleQuery.getQueryId()).isEmpty()) {
+                } else if (queryRepository.findByQueryId(singleQuery.getQueryId()).isEmpty()) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 } else {
                     queryRepository.save(singleQuery);
@@ -115,9 +111,9 @@ public class SingleQueryService {
             Statement statement = null;
             Optional<String> createSql = null;
             try {
-                if(id == null || Integer.parseInt(id) <= 0) {
+                if (id == null || Integer.parseInt(id) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
-                } else if(queryRepository.findByQueryId(id).map(SingleQuery::getQueryId).isEmpty()) {
+                } else if (queryRepository.findByQueryId(id).map(SingleQuery::getQueryId).isEmpty()) {
                     return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
                 }
 
@@ -131,7 +127,7 @@ public class SingleQueryService {
                 connection.close();
                 return new ResponseEntity<Void>(HttpStatus.CREATED);
             } catch (Exception e) {
-                System.err.println( e.getClass().getName()+": "+ e.getMessage() );
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
             }
         }).publishOn(Schedulers.boundedElastic());

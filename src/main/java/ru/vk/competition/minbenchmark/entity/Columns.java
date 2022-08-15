@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Data
 @Builder
@@ -22,9 +20,4 @@ public class Columns {
 
     String title;
     String type;
-
-    /*@NotNull
-    @ManyToMany(cascade = {CascadeType.ALL, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    List<Table> tables;*/
-
 }

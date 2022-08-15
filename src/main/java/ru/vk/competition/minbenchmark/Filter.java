@@ -10,7 +10,6 @@ import java.util.logging.Logger;
 
 @Component
 public class Filter implements WebFilter {
-
     Logger logger = Logger.getLogger("filter");
 
     @Override
