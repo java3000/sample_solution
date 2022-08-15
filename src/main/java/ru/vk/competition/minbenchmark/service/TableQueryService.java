@@ -1,14 +1,12 @@
 package ru.vk.competition.minbenchmark.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-import ru.vk.competition.minbenchmark.entity.SingleQuery;
 import ru.vk.competition.minbenchmark.entity.Table;
 import ru.vk.competition.minbenchmark.entity.TableQuery;
 import ru.vk.competition.minbenchmark.repository.TableQueryRepository;
@@ -23,18 +21,13 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class TableQueryService {
 
     Logger logger = Logger.getLogger("table-query");
     private final TableRepository tableRepository;
     private final TableQueryRepository tableQueryRepository;
-
-    //private final String QUERY_PATTERN = "[a-zA-Z*]+";
-    private final String QUERY_PATTERN = "[a-zA-Z*]+";
-    //private final String QUERY_PATTERN = "(select|update|insert|delete)[\s\S]+";
-    //sudo docker login stor.highloadcup.ru -u lexa709@mail.ru -p 98bf323f4e38 && sudo docker tag b292317b35f0 stor.highloadcup.ru/it_one_j22_qual/secret_quetzalu && sudo docker push stor.highloadcup.ru/it_one_j22_qual/secret_quetzalu
+    private final String QUERY_PATTERN = "([a-zA-Z*]+)";
     private final Pattern queryPattern = Pattern.compile(QUERY_PATTERN, Pattern.MULTILINE | Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 
     public Mono<ResponseEntity<Void>> addQuery(TableQuery query) {
