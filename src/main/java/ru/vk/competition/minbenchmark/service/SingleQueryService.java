@@ -141,8 +141,10 @@ public class SingleQueryService {
                 if(resultId == null || Integer.parseInt(resultId) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
-
                 if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                if(Integer.parseInt(code) != HttpStatus.BAD_REQUEST.value()) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
                 //TODO add some work here
@@ -160,6 +162,9 @@ public class SingleQueryService {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
                 if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                if (queryRepository.findByQueryId(queryId).map(SingleQuery::getQueryId).isEmpty()) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
                 //TODO не cуществует такого resuitId
@@ -180,8 +185,10 @@ public class SingleQueryService {
                 if(resultId == null || Integer.parseInt(resultId) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
-
                 if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                if(Integer.parseInt(code) != HttpStatus.NOT_ACCEPTABLE.value()) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
 
@@ -229,8 +236,10 @@ public class SingleQueryService {
                 if(resultId == null || Integer.parseInt(resultId) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
-
                 if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                if(Integer.parseInt(code) != HttpStatus.NOT_ACCEPTABLE.value()) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
 
@@ -264,8 +273,10 @@ public class SingleQueryService {
                 if(resultId == null || Integer.parseInt(resultId) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
-
                 if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                if(Integer.parseInt(code) != HttpStatus.NOT_ACCEPTABLE.value()) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
 
@@ -300,8 +311,10 @@ public class SingleQueryService {
                 if(resultId == null || Integer.parseInt(resultId) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
-
                 if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                if(Integer.parseInt(code) != HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
 
