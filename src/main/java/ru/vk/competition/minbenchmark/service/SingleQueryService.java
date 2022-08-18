@@ -159,13 +159,172 @@ public class SingleQueryService {
                 if(queryId == null || Integer.parseInt(queryId) <= 0) {
                     return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
                 }
+                if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                //TODO не cуществует такого resuitId
+                //TODO what is query and what to do with it...
 
-                //TODO Не существует заданного resultId
 
                 //TODO add some work here
                 return new ResponseEntity<Void>(HttpStatus.CREATED);
             } catch (Exception e) {
                 return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> addModifyResult(String resultId, String code) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> modifySingleQuery(String resultId, String queryId, String query) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(queryId == null || Integer.parseInt(queryId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if (queryRepository.findByQueryId(queryId).map(SingleQuery::getQueryId).isEmpty()) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }
+
+                if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }/*  else if () {
+                    //TODO Запроса с таким id не существует
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }*/
+
+                if(query == null || query.isEmpty() || query.isBlank()) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                } else if (query.length() > 120) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> addDeleteResult(String resultId, String code) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> deleteSingleQueryById(int id, int resid) {
+        return Mono.fromCallable(() -> {
+            try {
+                if (queryRepository.findByQueryId(String.valueOf(id)).map(SingleQuery::getQueryId).isEmpty()) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }
+                //TODO ● Не существует заданного resultId
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> addExecuteResult(String resultId, String code) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> executeSingleQueryById(int id, int resid) {
+        return Mono.fromCallable(() -> {
+            try {
+                if (queryRepository.findByQueryId(String.valueOf(id)).map(SingleQuery::getQueryId).isEmpty()) {
+                    return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+                }
+                //TODO ● Синтаксис запроса неверный
+                //TODO ● Не существует заданного resultId
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.CREATED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> addGetSingleQueryByIdResult(String resultId, String code) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> getSingleQueryBiId(int id, int resid) {
+        return Mono.fromCallable(() -> {
+            try {
+                if (queryRepository.findByQueryId(String.valueOf(id)).map(SingleQuery::getQueryId).isEmpty()) {
+                    return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+                //TODO ● Не существует заданного resultId
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }).publishOn(Schedulers.boundedElastic());
     }
