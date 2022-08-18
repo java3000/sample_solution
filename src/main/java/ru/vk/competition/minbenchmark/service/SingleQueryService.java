@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import ru.vk.competition.minbenchmark.entity.SingleQuery;
@@ -129,6 +131,41 @@ public class SingleQueryService {
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 return new ResponseEntity<Void>(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> addResult(String resultId, String code) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(resultId == null || Integer.parseInt(resultId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                if(code == null || Integer.parseInt(code) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }).publishOn(Schedulers.boundedElastic());
+    }
+
+    public Mono<ResponseEntity<Void>> addNewQuery(String resultId, String queryId, String query) {
+        return Mono.fromCallable(() -> {
+            try {
+                if(queryId == null || Integer.parseInt(queryId) <= 0) {
+                    return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                }
+
+                //TODO Не существует заданного resultId
+
+                //TODO add some work here
+                return new ResponseEntity<Void>(HttpStatus.CREATED);
+            } catch (Exception e) {
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
             }
         }).publishOn(Schedulers.boundedElastic());
     }
